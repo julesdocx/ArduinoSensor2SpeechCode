@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Socket io client</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+            .audio {
+                display: none;
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+        <script>
+
+          var socket = io('http://localhost:3000');
+            var playing = false;
+          socket.on('connect', function(){
+              console.log('Client connected');
+          });
+
+          socket.on('/arduino/trigger', function(data){
+            if(playing == false){
+                playing = true
+            console.log('Trigger received: ', data);
+            var audio = document.createElement('audio');
+            audio.src = '/1.mp3';
+            audio.setAttribute('class','audio')
+			audio.autoplay = true; //avoid the user has not interacted with your page issue
+			audio.onended = function(){
+                console.log('Audio ended');
+                playing = false;
+			};
+            document.body.appendChild(audio);
+        }
+          });
+
+          socket.on('/arduino/bye', function(data){
+            console.log('TriGGer received: ', data);
+            var audio2 = document.createElement('audio');
+            audio2.src = 'text3.mp3';
+            audio2.setAttribute('class','audio')
+			audio2.autoplay = true; //avoid the user has not interacted with your page issue
+			audio2.onended = function(){
+				console.log('Audio ended');
+			};
+			document.body.appendChild(audio2);
+          });
+          socket.on('/arduino/please', function(data){
+            console.log('Trigger receiveD: ', data);
+            if(playing == false){
+                playing = true;
+                let previous = document.getElementById("video");
+                if (previous != null) {
+                    document.getElementById("video").remove();
+                    let eva_video = document.createElement("video");
+                    eva_video.src = '/EVA_PROJECTOR.mp4';
+                    eva_video.autoplay = true;
+                    eva_video.setAttribute('id','video');
+                    eva_video.width = 1400;
+                    eva_video.onended = function(){
+                        playing = false
+                        console.log('video ended');
+                    }
+                    document.body.appendChild(eva_video); 
+                }else{ 
+                    let eva_video = document.createElement("video");
+                    eva_video.src = '/EVA_PROJECTOR.mp4';
+                    eva_video.autoplay = true;
+                    eva_video.setAttribute('id','video');
+                    eva_video.width = 1400;
+                
+                    eva_video.onended = function(){
+                        playing = false
+                        console.log('video ended');
+                    }
+                    document.body.appendChild(eva_video);
+                }
+            }
+            
+            
+          });
+          socket.on('disconnect', function(){
+              console.log('Client disconnected');
+          });
+          
+        </script>
+    </head>
+    <html>
+        <body>
+
+        </body>
+    </html>
